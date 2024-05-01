@@ -1,8 +1,5 @@
 import copy
 
-final = [[1, 2, 3], [4, 5, 6], [7, 8, -1]]
-initial = [[2, 3, 6], [1, -1, 5], [4, 7, 8]]
-
 def find_blank(state):
     for i, row in enumerate(state):
         for j, tile in enumerate(row):
@@ -56,6 +53,12 @@ def print_steps(initial, steps):
         print("")
 
 def main():
+    print("Enter the initial state:")
+    initial = [[int(x) for x in input().split()] for _ in range(3)]
+
+    print("Enter the final state:")
+    final = [[int(x) for x in input().split()] for _ in range(3)]
+
     steps = astar(initial, final)
     if steps is not None:
         print_steps(initial, steps)
@@ -64,3 +67,15 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+"""
+Enter the initial state:
+2 3 6
+1 -1 5
+4 7 8
+Enter the final state:
+1 2 3
+4 5 6
+7 8 -1
+"""

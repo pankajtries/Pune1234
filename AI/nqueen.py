@@ -1,80 +1,37 @@
 def printSolution(board):
-    for i in range(N):
-        for j in range(N):
-            print(board[i][j], end=" ")
-        print()
+    for row in board:
+        print(' '.join(map(str, row)))
+    print()
 
+def isSafe(row, col, slashCode, backslashCode, rowLookup, slashCodeLookup, backslashCodeLookup):
+    return not (slashCodeLookup[slashCode[row][col]] or backslashCodeLookup[backslashCode[row][col]] or rowLookup[row])
 
-def isSafe(row, col, slashCode, backslashCode,
-           rowLookup, slashCodeLookup,
-           backslashCodeLookup):
-    if (slashCodeLookup[slashCode[row][col]] or
-            backslashCodeLookup[backslashCode[row][col]] or
-            rowLookup[row]):
-        return False
-    return True
-
-def solveNQueensUtil(board, col, slashCode, backslashCode,
-                     rowLookup, slashCodeLookup,
-                     backslashCodeLookup):
-
+def solveNQueensUtil(board, col, slashCode, backslashCode, rowLookup, slashCodeLookup, backslashCodeLookup):
     global count
-    if (col >= N):
+    if col >= N:
         count += 1
         printSolution(board)
-        print()
         return True
-    for i in range(N):
-        if (isSafe(i, col, slashCode, backslashCode,
-                   rowLookup, slashCodeLookup,
-                   backslashCodeLookup)):
-
-            board[i][col] = 1
-            rowLookup[i] = True
-            slashCodeLookup[slashCode[i][col]] = True
-            backslashCodeLookup[backslashCode[i][col]] = True
-
-            if (solveNQueensUtil(board, col + 1,
-                                 slashCode, backslashCode,
-                                 rowLookup, slashCodeLookup,
-                                 backslashCodeLookup)):
+    for row in range(N):
+        if isSafe(row, col, slashCode, backslashCode, rowLookup, slashCodeLookup, backslashCodeLookup):
+            board[row][col] = 1
+            rowLookup[row] = slashCodeLookup[slashCode[row][col]] = backslashCodeLookup[backslashCode[row][col]] = True
+            if solveNQueensUtil(board, col + 1, slashCode, backslashCode, rowLookup, slashCodeLookup, backslashCodeLookup):
                 pass
-
-            board[i][col] = 0
-            rowLookup[i] = False
-            slashCodeLookup[slashCode[i][col]] = False
-            backslashCodeLookup[backslashCode[i][col]] = False
-
+            board[row][col] = 0
+            rowLookup[row] = slashCodeLookup[slashCode[row][col]] = backslashCodeLookup[backslashCode[row][col]] = False
     return False
 
 def solveNQueens(N):
     global count
     count = 0
-    board = [[0 for i in range(N)]
-             for j in range(N)]
-
-
-    slashCode = [[0 for i in range(N)]
-                 for j in range(N)]
-    backslashCode = [[0 for i in range(N)]
-                     for j in range(N)]
-
+    board = [[0 for _ in range(N)] for _ in range(N)]
+    slashCode = [[row + col for col in range(N)] for row in range(N)]
+    backslashCode = [[row - col + N - 1 for col in range(N)] for row in range(N)]
     rowLookup = [False] * N
-
-    x = 2 * N - 1
-    slashCodeLookup = [False] * x
-    backslashCodeLookup = [False] * x
-
-
-    for rr in range(N):
-        for cc in range(N):
-            slashCode[rr][cc] = rr + cc
-            backslashCode[rr][cc] = rr - cc + N - 1
-
-    solveNQueensUtil(board, 0, slashCode, backslashCode,
-                     rowLookup, slashCodeLookup,
-                     backslashCodeLookup)
-
+    slashCodeLookup = [False] * (2 * N - 1)
+    backslashCodeLookup = [False] * (2 * N - 1)
+    solveNQueensUtil(board, 0, slashCode, backslashCode, rowLookup, slashCodeLookup, backslashCodeLookup)
     if count == 0:
         print("Solution does not exist")
         return False
@@ -82,5 +39,5 @@ def solveNQueens(N):
         print("Total solutions:", count)
         return True
 
-N = 6
+N=int(input("Enter the number of queens: "))
 solveNQueens(N)
