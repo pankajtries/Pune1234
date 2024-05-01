@@ -30,7 +30,7 @@ class Graph:
                     queue.append(neighbor)
 
 g = Graph()
-6
+
 m = int(input("Enter no of edges: "))
 for _ in range(m):
     u, v = map(int, input("Enter the edge (u v): ").split())
