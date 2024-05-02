@@ -1,0 +1,44 @@
+import heapq
+import sys
+
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = [[] for _ in range(vertices)]
+
+    def add_edge(self, u, v, w):
+        self.graph[u].append((v, w))
+
+    def dijkstra(self, src):
+        dist = [sys.maxsize] * self.V
+        dist[src] = 0
+        min_heap = [(0, src)]
+
+        while min_heap:
+            d, u = heapq.heappop(min_heap)
+            if d > dist[u]:
+                continue
+            for v, w in self.graph[u]:
+                if dist[u] + w < dist[v]:
+                    dist[v] = dist[u] + w
+                    heapq.heappush(min_heap, (dist[v], v))
+
+        return dist
+
+if __name__ == "__main__":
+    num_vertices = int(input("Enter the number of vertices in the graph: "))
+    g = Graph(num_vertices)
+
+    num_edges = int(input("Enter the number of edges in the graph: "))
+    print("Enter edges and their weights in the format 'source destination weight':")
+    for _ in range(num_edges):
+        u, v, w = map(int, input().split())
+        g.add_edge(u, v, w)
+
+    source_vertex = int(input("Enter the source vertex: "))
+
+    shortest_distances = g.dijkstra(source_vertex)
+
+    print("Shortest distances from vertex", source_vertex, "to all other vertices:")
+    for i, distance in enumerate(shortest_distances):
+        print("Vertex:", i, "Distance:", distance)
