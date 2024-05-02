@@ -1,81 +1,120 @@
-import copy
+def print_state(title, state, h, g=0):
+    print(title)
+    for row in state:
+        for elmt in row:
+            print(elmt, end=" ")
+        print()
+    print(f"g={g}, h={h}, f={g + h}\n")
 
-def find_blank(state):
-    for i, row in enumerate(state):
-        for j, tile in enumerate(row):
-            if tile == -1:
-                return i, j
 
-def move(state, direction):
-    blank_row, blank_col = find_blank(state)
-    new_state = copy.deepcopy(state)
-    if direction == "left" and blank_col > 0:
-        new_state[blank_row][blank_col], new_state[blank_row][blank_col - 1] = new_state[blank_row][blank_col - 1], new_state[blank_row][blank_col]
-    elif direction == "up" and blank_row > 0:
-        new_state[blank_row][blank_col], new_state[blank_row - 1][blank_col] = new_state[blank_row - 1][blank_col], new_state[blank_row][blank_col]
-    elif direction == "right" and blank_col < 2:
-        new_state[blank_row][blank_col], new_state[blank_row][blank_col + 1] = new_state[blank_row][blank_col + 1], new_state[blank_row][blank_col]
-    elif direction == "down" and blank_row < 2:
-        new_state[blank_row][blank_col], new_state[blank_row + 1][blank_col] = new_state[blank_row + 1][blank_col], new_state[blank_row][blank_col]
-    else:
-        new_state = None
-    return new_state
+class Node:
+    def __init__(self, data, level, fval):
+        self.data = data
+        self.level = level
+        self.fval = fval
 
-def heuristic(state, goal):
-    return sum(abs(i//3 - j//3) + abs(i%3 - j%3) for i in range(3) for j in range(9) if state[i//3][i%3] != -1 and state[i//3][i%3] != goal[j//3][j%3])
+    def generate_child(self):
+        x, y = self.find(self.data, '_')
+        val_list = [[x, y - 1], [x, y + 1], [x - 1, y], [x + 1, y]]
+        children = []
+        for i in val_list:
+            child = self.shuffle(self.data, x, y, i[0], i[1])
+            if child is not None:
+                child_node = Node(child, self.level + 1, 0)
+                children.append(child_node)
+        return children
 
-def astar(initial, goal):
-    queue = [(heuristic(initial, goal), 0, initial, [])]
-    explored = set()
-    while queue:
-        _, cost, current_state, path = queue.pop(0)
-        if current_state == goal:
-            return path
-        explored.add(tuple(map(tuple, current_state)))
-        for direction in ["left", "up", "right", "down"]:
-            new_state = move(current_state, direction)
-            if new_state is not None and tuple(map(tuple, new_state)) not in explored:
-                new_cost = cost + 1
-                queue.append((new_cost + heuristic(new_state, goal), new_cost, new_state, path + [direction]))
-        queue.sort(key=lambda x: x[0])
+    def shuffle(self, puz, x1, y1, x2, y2):
+        if x2 >= 0 and x2 < len(self.data) and y2 >= 0 and y2 < len(self.data):
+            temp_puz = []
+            temp_puz = self.copy(puz)
+            temp = temp_puz[x2][y2]
+            temp_puz[x2][y2] = temp_puz[x1][y1]
+            temp_puz[x1][y1] = temp
+            return temp_puz
+        else:
+            return None
 
-def print_steps(initial, steps):
-    current_state = initial
-    print("Initial State:")
-    for row in current_state:
-        print(row)
-    print("")
-    for i, step in enumerate(steps, 1):
-        print("Step", i)
-        current_state = move(current_state, step)
-        for row in current_state:
-            print(row)
-        print("")
+    def copy(self, root):
+        temp = []
+        for i in root:
+            t = []
+            for j in i:
+                t.append(j)
+            temp.append(t)
+        return temp
 
-def main():
-    print("Enter the initial state:")
-    initial = [[int(x) for x in input().split()] for _ in range(3)]
+    def find(self, puz, x):
+        for i in range(0, len(self.data)):
+            for j in range(0, len(self.data)):
+                if puz[i][j] == x:
+                    return i, j
 
-    print("Enter the final state:")
-    final = [[int(x) for x in input().split()] for _ in range(3)]
 
-    steps = astar(initial, final)
-    if steps is not None:
-        print_steps(initial, steps)
-    else:
-        print("No solution found.")
+class Puzzle:
+    def __init__(self, size):
+        self.n = size
+        self.open = []
+        self.closed = []
 
-if __name__ == "__main__":
-    main()
+    def accept(self):
+        puz = []
+        for i in range(0, self.n):
+            temp = input().split(" ")
+            puz.append(temp)
+        return puz
 
+    def f(self, start, goal):
+        return self.h(start.data, goal) + start.level
+
+    def h(self, start, goal):
+        temp = 0
+        for i in range(0, self.n):
+            for j in range(0, self.n):
+                if start[i][j] != goal[i][j] and start[i][j] != '_':
+                    temp += 1
+        return temp
+
+    def process(self):
+        print("Enter the start state matrix \n")
+        start = self.accept()
+        print("Enter the goal state matrix \n")
+        goal = self.accept()
+
+        start = Node(start, 0, 0)
+        start.fval = self.f(start, goal)
+        """ Put the start node in the open list"""
+        self.open.append(start)
+        print("\n\n")
+        while True:
+            cur = self.open[0]
+
+            if (self.h(cur.data, goal) == 0):
+                print_state("Reached Goal State", cur.data, cur.fval - cur.level, cur.level)
+                break
+            print_state("State", cur.data, cur.fval - cur.level, cur.level)
+            for i in cur.generate_child():
+                i.fval = self.f(i, goal)
+                self.open.append(i)
+            self.closed.append(cur)
+            del self.open[0]
+
+            """ sort the opne list based on f value """
+            self.open.sort(key=lambda x: x.fval, reverse=False)
+
+
+puz = Puzzle(3)
+puz.process()
 
 """
-Enter the initial state:
+Enter the start state matrix
+
 2 3 6
-1 -1 5
+1 _ 5
 4 7 8
-Enter the final state:
+Enter the goal state matrix
+
 1 2 3
 4 5 6
-7 8 -1
+7 8 _
 """
