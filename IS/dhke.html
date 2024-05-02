@@ -80,13 +80,14 @@
             <input type="number" id="root" min="2">
         </div>
         <div>
-            <label for="alice_private_key">Alice's Private Key:</label>
-            <input type="number" id="alice_private_key" min="1">
-        </div>
+            <label for="ram_private_key">Ram's Private Key:</label>
+            <input type="number" id="ram_private_key" min="1">
+        </div><!--
         <div>
-            <label for="bob_private_key">Bob's Private Key:</label>
-            <input type="number" id="bob_private_key" min="1">
+            <label for="shyam_private_key">Shyam's Private Key:</label>
+            <input type="number" id="shyam_private_key" min="1">
         </div>
+        -->
         <button onclick="performKeyExchange()">Perform Key Exchange</button>
         <div id="output"></div>
     </div>
@@ -100,27 +101,22 @@
         function performKeyExchange() {
             var P = parseInt(document.getElementById('prime').value);
             var G = parseInt(document.getElementById('root').value);
-            var a = parseInt(document.getElementById('alice_private_key').value);
-            var b = parseInt(document.getElementById('bob_private_key').value);
+            var ramPrivateKey = parseInt(document.getElementById('ram_private_key').value);
+            var shyamPrivateKey = 3
+            // var shyamPrivateKey = parseInt(document.getElementById('shyam_private_key').value);
 
-            var x = power(G, a, P);
-            var y = power(G, b, P);
+            var ramPublicKey = power(G, ramPrivateKey, P);
+           var shyamPublicKey = power(G, shyamPrivateKey, P);
 
-            var ka = power(y, a, P); 
-            var kb = power(x, b, P); 
+            var sharedSecretRam = power(shyamPublicKey, ramPrivateKey, P);
+            var sharedSecretShyam = power(ramPublicKey, shyamPrivateKey, P);
 
-            var output = "Public Key for Alice (x): " + x + "<br>";
-            output += "Public Key for Bob (y): " + y + "<br>";
-            output += "Shared Secret: " + ka;
-
+            var output = "Ram's Public Key: " + ramPublicKey + "<br>";
+            output += "Shyam's Public Key: " + shyamPublicKey + "<br>";
+            output += "Ram's Shared Secret: " + sharedSecretRam + "<br>";
+            output += "Shyam's Shared Secret: " + sharedSecretShyam;
             document.getElementById('output').innerHTML = output;
         }
     </script>
 </body>
 </html>
-<!--
-    P = 23
-    G = 9
-    a = 4
-    b = 3
--->
