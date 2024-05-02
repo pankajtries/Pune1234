@@ -12,58 +12,43 @@ def is_prime(n):
         i += 6
     return True
 
-p = int(input("Enter prime number p: "))
-while not is_prime(p):
-    p = int(input("Please enter a prime number for p: "))
+def get_prime_input(prompt):
+    while True:
+        try:
+            num = int(input(prompt))
+            if is_prime(num):
+                return num
+            else:
+                print("Please enter a prime number.")
+        except ValueError:
+            print("Please enter a valid integer.")
 
-q = int(input("Enter prime number q: "))
-while not is_prime(q):
-    q = int(input("Please enter a prime number for q: "))
+p = get_prime_input("Enter prime number p: ")
+q = get_prime_input("Enter prime number q: ")
 
 n = p * q
-print("n =", n)
-
 phi = (p - 1) * (q - 1)
 
-e = int(input("Enter public exponent e: "))
+e = int(input("Enter public exponent e (such that gcd(e, phi) = 1): "))
 while math.gcd(e, phi) != 1:
-    e = int(input("Please enter a valid public exponent e: "))
-
-print("e =", e)
-
-def modinv(a, m):
-    m0, x0, x1 = m, 0, 1
-    while a > 1:
-        q = a // m
-        m, a = a % m, m
-        x0, x1 = x1 - q * x0, x0
-    return x1 + m0 if x1 < 0 else x1
-
-d = modinv(e, phi)
-print("d =", d)
-
-print(f'Public key: {e, n}')
-print(f'Private key: {d, n}')
+    print("Please enter a valid public exponent e such that gcd(e, phi) = 1.")
+    e = int(input("Enter public exponent e: "))
 
 msg = int(input("Enter the message to encrypt: "))
-print(f'Original message: {msg}')
+
+d = pow(e, -1, phi)
 
 C = pow(msg, e, n)
-print(f'Encrypted message: {C}')
+decrypted_message = pow(C, d, n)
 
-M = pow(C, d, n)
-print(f'Decrypted message: {M}')
+print("Encrypted message:", C)
+print("Decrypted message:", decrypted_message)
+
 """
 Enter prime number p: 11
 Enter prime number q: 13
-n = 143
-Enter public exponent e: 23
-e = 23
-d = 47
-Public key: (23, 143)
-Private key: (47, 143)
+Enter public exponent e (such that gcd(e, phi) = 1): 23
 Enter the message to encrypt: 2
-Original message: 2
 Encrypted message: 85
 Decrypted message: 2
 """
