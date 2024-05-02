@@ -1,0 +1,63 @@
+import random
+
+class PizzaBot:
+    def __init__(self):
+        self.menu = {
+            "margherita": 8.99,
+            "pepperoni": 9.99,
+            "veggie": 10.99,
+            "supreme": 11.99
+        }
+        self.orders = {}
+
+    def welcome_message(self):
+        return "Welcome to PizzaBot! How can I assist you today?"
+
+    def get_menu(self):
+        menu_list = "\n".join([f"{item.capitalize()}: ${price}" for item, price in self.menu.items()])
+        return f"Here's our menu:\n{menu_list}"
+
+    def take_order(self, order):
+        items = order.split(',')
+        total_cost = 0
+        order_summary = ""
+
+        for item in items:
+            item = item.strip().lower()
+            if item in self.menu:
+                total_cost += self.menu[item]
+                order_summary += f"{item.capitalize()}, "
+            else:
+                return "Sorry, we don't have that item on our menu. Please choose from our menu."
+
+        order_id = random.randint(1000, 9999)
+        self.orders[order_id] = order_summary[:-2]  # Remove trailing comma and space
+        return f"Your order ({order_summary[:-2]}) has been placed! Your total is ${total_cost}. Your order ID is: {order_id}"
+
+    def check_order_status(self, order_id):
+        if order_id in self.orders:
+            return f"Your order ({self.orders[order_id]}) is being prepared."
+        else:
+            return "Sorry, we couldn't find any order with that ID. Please make sure you entered the correct order ID."
+
+# Main program
+pizzabot = PizzaBot()
+
+print(pizzabot.welcome_message())
+
+while True:
+    user_input = input("You: ").lower()
+
+    if user_input == "menu":
+        print(pizzabot.get_menu())
+    elif user_input == "exit":
+        print("Thank you for choosing PizzaBot. Have a great day!")
+        break
+    elif user_input.startswith("order"):
+        order = user_input.split(' ', 1)[1]
+        print(pizzabot.take_order(order))
+    elif user_input.startswith("status"):
+        order_id = int(user_input.split(' ')[1])
+        print(pizzabot.check_order_status(order_id))
+    else:
+        print("I'm sorry, I didn't understand that. You can ask for the menu, place an order, check order status, or exit.")
