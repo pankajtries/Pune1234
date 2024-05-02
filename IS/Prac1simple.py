@@ -13,3 +13,16 @@ for char in input_string:
 
 print(result)
 print(result1)
+
+"""
+RSA extra
+P, Q, M = 3, 11, 3
+n = P * Q
+phi = (P - 1) * (Q - 1)
+e, d = 3, pow(3, -1, phi)
+C = pow(M, e, n)
+decrypted_message = pow(C, d, n)
+
+print("Encrypted message (C):", C)
+print("Decrypted message:", decrypted_message)
+"""
