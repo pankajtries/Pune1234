@@ -1,6 +1,3 @@
-javac MD5Example.java
-java MD5Example
-
 public class MD5Example {
 
     public static void main(String[] args) {

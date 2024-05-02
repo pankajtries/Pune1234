@@ -55,3 +55,17 @@ print(f'Encrypted message: {C}')
 
 M = pow(C, d, n)
 print(f'Decrypted message: {M}')
+"""
+Enter prime number p: 11
+Enter prime number q: 13
+n = 143
+Enter public exponent e: 23
+e = 23
+d = 47
+Public key: (23, 143)
+Private key: (47, 143)
+Enter the message to encrypt: 2
+Original message: 2
+Encrypted message: 85
+Decrypted message: 2
+"""

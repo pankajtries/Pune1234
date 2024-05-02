@@ -7,24 +7,28 @@ class Graph:
         self.graph.append((u, v, w))
 
     def find(self, parent, i):
-        return i if parent[i] == i else self.find(parent, parent[i])
+        if 0 <= i < len(parent):
+            return i if parent[i] == i else self.find(parent, parent[i])
+        else:
+            return i
 
     def union(self, parent, rank, x, y):
         xroot = self.find(parent, x)
         yroot = self.find(parent, y)
-        if rank[xroot] < rank[yroot]:
-            parent[xroot] = yroot
-        elif rank[xroot] > rank[yroot]:
-            parent[yroot] = xroot
-        else:
-            parent[yroot] = xroot
-            rank[xroot] += 1
+        if 0 <= xroot < len(rank) and 0 <= yroot < len(rank):
+            if rank[xroot] < rank[yroot]:
+                parent[xroot] = yroot
+            elif rank[xroot] > rank[yroot]:
+                parent[yroot] = xroot
+            else:
+                parent[yroot] = xroot
+                rank[xroot] += 1
 
     def kruskal_algo(self):
         result = []
         self.graph.sort(key=lambda x: x[2])
         parent = list(range(self.V))
-        rank = [0] * self.V
+        rank = [0] * self.V  # Initialize rank list with the correct size
         for u, v, weight in self.graph:
             x = self.find(parent, u)
             y = self.find(parent, v)
