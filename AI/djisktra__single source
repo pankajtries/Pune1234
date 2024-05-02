@@ -42,3 +42,22 @@ if __name__ == "__main__":
     print("Shortest distances from vertex", source_vertex, "to all other vertices:")
     for i, distance in enumerate(shortest_distances):
         print("Vertex:", i, "Distance:", distance)
+
+"""
+Enter the number of vertices in the graph: 5
+Enter the number of edges in the graph: 7
+Enter edges and their weights in the format 'source destination weight':
+0 1 4
+0 2 2
+1 2 5
+1 3 10
+2 3 3
+2 4 2
+3 4 6
+Enter the source vertex: 0
+Shortest distances from vertex 0 to all other vertices:
+Vertex: 0 Distance: 0
+Vertex: 1 Distance: 4
+Vertex: 2 Distance: 2
+Vertex: 3 Distance: 5
+Vertex: 4 Distance: 4"""
